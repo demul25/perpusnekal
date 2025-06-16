@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perpustakaan SMPN 1 Kalapanunggal</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Default Light Mode Background */
+            transition: background-color 0.3s ease; /* Smooth transition for background */
+            color: #334155; /* Default text color for light mode */
+        }
+        /* Dark mode specific styles */
+        body.dark {
+            background-color: #1a202c; /* Dark Mode Background */
+            color: #e2e8f0; /* Light text for dark mode */
+        }
+        body.dark .bg-white {
+            background-color: #2d3748; /* Darker background for cards/containers in dark mode */
+            color: #e2e8f0;
+        }
+        body.dark .text-gray-800 {
+            color: #e2e8f0;
+        }
+        body.dark .text-gray-600 {
+            color: #cbd5e0;
+        }
+        body.dark .text-gray-900 {
+            color: #e2e8f0;
+        }
+        body.dark .border-gray-300 {
+            border-color: #4a5568;
+        }
+        body.dark .text-gray-700 {
+            color: #cbd5e0;
+        }
+        body.dark .bg-gray-100 {
+            background-color: #4a5568; /* Darker background for image placeholders */
+        }
+        body.dark input, body.dark textarea, body.dark select {
+            background-color: #4a5568;
+            color: #e2e8f0;
+            border-color: #4a5568;
+        }
+        body.dark .placeholder {
+            color: #a0aec0;
+        }
+        body.dark .text-red-600 {
+            color: #f87171; /* Adjust red for dark mode if needed */
+        }
+        body.dark .text-green-600 {
+            color: #6ee7b7; /* Adjust green for dark mode if needed */
+        }
+        body.dark table, body.dark th, body.dark td {
+            border-color: #4a5568;
+        }
+        body.dark thead th {
+            background-color: #1f2937;
+        }
+        body.dark tbody tr:nth-child(even) {
+            background-color: #374151;
+        }
+
+
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        body.dark ::-webkit-scrollbar-track {
+            background: #4a5568;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        body.dark ::-webkit-scrollbar-thumb {
+            background: #718096;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        body.dark ::-webkit-scrollbar-thumb:hover {
+            background: #5b687c;
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+            display: none; /* Hidden by default */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Library ambiance background for user view */
+        #userView {
+            background-image: url('https://placehold.co/1200x800/dbeafe/1e40af?text=Perpustakaan+Sekolah'); /* Light blue-themed library image */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 0.75rem; /* rounded-xl from main container */
+            padding: 1.5rem; /* p-6 from main container */
+            position: relative; /* Needed for overlay */
+            z-index: 0; /* Ensure it's behind content */
+        }
+
+        #userView::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.7); /* Light overlay for light mode */
+            border-radius: inherit;
+            z-index: -1; /* Place behind content */
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark #userView::before {
+            background-color: rgba(0, 0, 0, 0.6); /* Dark overlay for dark mode */
+        }
+
+        /* Ensure content is positioned correctly on top of the background */
+        #userView > * {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
+
+    <!-- Main Application Container -->
+    <div class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 sm:p-8 relative">
+        <!-- Theme Toggle Button -->
+        <button id="themeToggle"
+                class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors duration-200 ease-in-out">
+            <!-- Sun icon for light mode, Moon icon for dark mode (using SVG or Font Awesome) -->
+            <svg id="sunIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 00-.707-.293h-1.092a1 1 0 000 2h1.092a1 1 0 00.707-.293l.707-.707zM10 18a1 1 0 01-1 1v1a1 1 0 112 0v-1a1 1 0 01-1-1zM4.95 14.05l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zm-2.12-10.607l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 01-1.414 1.414zM3 10a1 1 0 01-1-1V8a1 1 0 112 0v1a1 1 0 01-1 1zm15 0a1 1 0 01-1-1V8a1 1 0 112 0v1a1 1 0 01-1 1z"></path>
+            </svg>
+            <svg id="moonIcon" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+
+        <h1 class="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-6">
+            Perpustakaan SMPN 1 Kalapanunggal
+        </h1>
+        <p class="text-center text-gray-600 mb-8">
+            Selamat datang di sistem informasi perpustakaan SMPN 1 Kalapanunggal.
+        </p>
+
+        <!-- Toggle Admin/User View -->
+        <div class="mb-8 flex justify-center space-x-4">
+            <button id="userViewButton"
+                    class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                Tampilan Pengguna
+            </button>
+            <button id="adminViewButton"
+                    class="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                Login Admin
+            </button>
+        </div>
+
+        <!-- User View Section -->
+        <div id="userView" class="p-6 sm:p-8"> <!-- Added padding here to account for the background overlay -->
+            <!-- Search Bar Section -->
+            <div class="mb-8 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <input type="text" id="searchInput" placeholder="Cari buku berdasarkan judul, penulis, atau kategori..."
+                       class="flex-grow w-full sm:w-auto p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700">
+                <button id="searchButton"
+                        class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                    Cari
+                </button>
+            </div>
+
+            <!-- Book List Section -->
+            <div id="bookList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Book cards will be injected here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Admin View Section (Hidden by default) -->
+        <div id="adminView" class="hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Dashboard Admin</h2>
+
+            <!-- Logout Button for Admin -->
+            <div class="text-right mb-4">
+                <button id="logoutButton"
+                        class="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition duration-200 ease-in-out">
+                    Logout Admin
+                </button>
+            </div>
+
+            <!-- Add New Book Form -->
+            <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-xl shadow-inner mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Tambah Buku Baru</h3>
+                <form id="addBookForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="bookTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Judul Buku</label>
+                        <input type="text" id="bookTitle" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                    <div>
+                        <label for="bookAuthor" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Penulis</label>
+                        <input type="text" id="bookAuthor" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                    <div>
+                        <label for="bookCategory" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kategori</label>
+                        <input type="text" id="bookCategory" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                    <div>
+                        <label for="bookStock" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah Stok</label>
+                        <input type="number" id="bookStock" min="1" value="1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200" required>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="bookImageUrl" class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL Gambar Buku (Opsional)</label>
+                        <input type="url" id="bookImageUrl" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200" placeholder="https://placehold.co/200x300/e0f2fe/0369a1?text=Gambar+Buku">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="bookDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Deskripsi Buku</label>
+                        <textarea id="bookDescription" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200" required></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit"
+                                class="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                            Tambah Buku
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- List of All Books (Admin) -->
+            <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-xl shadow-inner mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Daftar Semua Buku</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600 border border-gray-200 dark:border-gray-600 rounded-lg">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Judul Buku</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Penulis</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Kategori</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stok Awal</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stok Tersedia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminBookTableBody" class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-600">
+                            <!-- Book list will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mt-4" id="noBooksInAdminListMessage" style="display: none;">Belum ada buku dalam daftar.</p>
+            </div>
+
+            <!-- Active Borrowings Section -->
+            <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-xl shadow-inner">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Peminjaman Aktif</h3>
+                <div id="activeBorrowingsList" class="space-y-4">
+                    <!-- Active borrowing items will be injected here -->
+                    <p class="text-gray-600 dark:text-gray-400" id="noActiveBorrowingsMessage">Tidak ada buku yang sedang dipinjam.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- General Message Modal (reused for various messages) -->
+    <div id="messageModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-11/12 max-w-sm transform transition-all scale-100 ease-out duration-300">
+            <h2 id="modalTitle" class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Pesan</h2>
+            <div id="modalContent">
+                <p id="modalMessage" class="text-gray-700 dark:text-gray-300 mb-6"></p>
+                <div id="modalLoader" class="loader mb-6"></div>
+            </div>
+            <button id="closeModalButton"
+                    class="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-11/12 max-w-sm transform transition-all scale-100 ease-out duration-300">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">Login Admin</h2>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="adminUsernameInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+                    <input type="text" id="adminUsernameInput" placeholder="administrator"
+                           class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                </div>
+                <div class="mb-6">
+                    <label for="adminPasswordInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                    <input type="password" id="adminPasswordInput" placeholder="administrator"
+                           class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" required>
+                </div>
+                <button type="submit"
+                        class="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                    Login
+                </button>
+            </form>
+            <button id="cancelLoginButton"
+                    class="w-full mt-3 px-4 py-2 bg-gray-400 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-200 ease-in-out">
+                Batal
+            </button>
+        </div>
+    </div>
+
+    <!-- Borrower Details Input Modal -->
+    <div id="borrowerDetailsModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-11/12 max-w-md transform transition-all scale-100 ease-out duration-300">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Siapa yang Meminjam Buku Ini?</h2>
+            <p class="text-gray-700 dark:text-gray-300 mb-4" id="borrowerModalBookTitle"></p>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jenis Peminjam:</label>
+                <div class="flex items-center space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="borrowerType" value="Siswa" id="borrowerTypeSiswa" class="form-radio text-blue-600">
+                        <span class="ml-2 text-gray-700 dark:text-gray-300">Siswa</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="borrowerType" value="Guru" id="borrowerTypeGuru" class="form-radio text-blue-600">
+                        <span class="ml-2 text-gray-700 dark:text-gray-300">Guru</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="borrowerFields" class="space-y-4 mb-6">
+                <div id="studentFields" class="hidden">
+                    <div>
+                        <label for="borrowerNameSiswa" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Peminjam</label>
+                        <input type="text" id="borrowerNameSiswa" placeholder="Masukkan Nama Siswa"
+                               class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 mt-1">
+                    </div>
+                    <div>
+                        <label for="borrowerClass" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kelas</label>
+                        <input type="text" id="borrowerClass" placeholder="Contoh: 7A, 8B"
+                               class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 mt-1">
+                    </div>
+                </div>
+
+                <div id="teacherFields" class="hidden">
+                    <div>
+                        <label for="borrowerNameGuru" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama Peminjam</label>
+                        <input type="text" id="borrowerNameGuru" placeholder="Masukkan Nama Guru"
+                               class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 mt-1">
+                    </div>
+                    <div>
+                        <label for="borrowerPosition" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jabatan</label>
+                        <input type="text" id="borrowerPosition" placeholder="Contoh: Guru Matematika"
+                               class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 mt-1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- New: Quantity Input -->
+            <div class="mb-6">
+                <label for="borrowQuantityInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah Buku yang Dipinjam</label>
+                <input type="number" id="borrowQuantityInput" min="1" value="1"
+                       class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 mt-1">
+                <p id="availableStockInfo" class="text-xs text-gray-500 dark:text-gray-400 mt-1"></p>
+            </div>
+
+            <div class="flex justify-end space-x-2">
+                <button id="confirmBorrowDetailsButton"
+                        class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                    Konfirmasi Pinjam
+                </button>
+                <button id="cancelBorrowDetailsButton"
+                        class="px-4 py-2 bg-gray-400 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-200 ease-in-out">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Mock data for books. Now using localStorage for persistence
+        let books = JSON.parse(localStorage.getItem('libraryBooks')) || [
+            {
+                id: 'B001',
+                title: 'Dongeng Sasatoan',
+                author: 'Ki Umbara',
+                category: 'Fiksi',
+                stock: 5,
+                available: 5,
+                borrowedBy: [], // Array to track {name, type, details: {class/position}, date}
+                imageUrl: 'https://placehold.co/200x300/e0f2fe/0369a1?text=Dongeng+Sasatoan',
+                description: 'Kumpulan dongeng tentang hewan dari Tanah Sunda yang mengandung pelajaran dan refleksi kehidupan sehari-hari. Dongeng-dongeng ini meliputi cerita yang lucu, seru, tapi juga penuh hikmah. Cocok untuk anak sekolah dasar dan menengah pertama.'
+            },
+            {
+                id: 'B002',
+                title: 'Sejarah Sunda',
+                author: 'Ajip Rosidi',
+                category: 'Sejarah',
+                stock: 3,
+                available: 3,
+                borrowedBy: [],
+                imageUrl: 'https://placehold.co/200x300/e0f2fe/0369a1?text=Sajarah+Sunda',
+                description: 'Buku tentang sejarah dan budaya Sunda dari zaman dahulu hingga kini. Menjelaskan asal-usul, kerajaan, tradisi, seni, dan bahasa Sunda secara komprehensif. Wajib dibaca bagi siapa saja yang ingin memahami jati diri Sunda.'
+            },
+            {
+                id: 'B003',
+                title: 'Matematika untuk SMP Kelas 7',
+                author: 'Tim Guru Matematika',
+                category: 'Pelajaran',
+                stock: 10,
+                available: 10,
+                borrowedBy: [],
+                imageUrl: 'https://placehold.co/200x300/e0f2fe/0369a1?text=Matematika+7',
+                description: 'Buku pelajaran matematika untuk siswa SMP kelas 7 yang disusun berdasarkan kurikulum terbaru. Meliputi bab-bab seperti Aljabar, Geometri, Statistik, dan Peluang, dengan banyak latihan soal untuk mengasah kemampuan siswa.'
+            },
+            {
+                id: 'B004',
+                title: 'Kimia untuk Kehidupan',
+                author: 'Dr. Kimiawan',
+                category: 'Pelajaran',
+                stock: 7,
+                available: 7,
+                borrowedBy: [],
+                imageUrl: 'https://placehold.co/200x300/e0f2fe/0369a1?text=Kimia+Kehidupan',
+                description: 'Penjelasan dasar-dasar kimia yang berhubungan dengan kehidupan sehari-hari. Membahas topik-topik seperti reaksi kimia dalam tubuh, kimia lingkungan, dan bahan-bahan kimia yang biasa digunakan di rumah. Buku ini membuat kimia lebih mudah dipahami.'
+            },
+            {
+                id: 'B005',
+                title: 'Resep Masakan Sunda',
+                author: 'Nyi Dapur',
+                category: 'Kuliner',
+                stock: 2,
+                available: 2,
+                borrowedBy: [],
+                imageUrl: 'https://placehold.co/200x300/e0f2fe/0369a1?text=Resep+Sunda',
+                description: 'Kumpulan resep masakan tradisional Sunda yang lezat dan mudah dibuat. Dari mulai sambal, lauk pauk, hingga jajanan pasar. Lengkap dengan langkah-langkah yang jelas dan tips agar hasilnya maksimal.'
+            },
+            {
+                id: 'B006',
+                title: 'Pendidikan Pancasila dan Kewarganegaraan',
+                author: 'Kementrian Pendidikan',
+                category: 'Pelajaran',
+                stock: 8,
+                available: 8,
+                borrowedBy: [],
+                imageUrl: 'https://placehold.co/200x300/e0f2fe/0369a1?text=PPKN',
+                description: 'Buku PPKN resmi untuk tingkat SMP yang menjelaskan nilai-nilai Pancasila, UUD 1945, serta hak dan kewajiban warga negara. Diperkaya dengan studi kasus dan diskusi untuk mengajak siswa berpikir kritis.'
+            },
+            {
+                id: 'B007',
+                title: 'Biologi Lingkungan',
+                author: 'Prof. Lingkungan',
+                category: 'Sains',
+                stock: 4,
+                available: 4,
+                borrowedBy: [],
+                imageUrl: 'https://placehold.co/200x300/e0f2fe/0369a1?text=Biologi+Lingkungan',
+                description: 'Membahas hubungan antara organisme hidup dan lingkungannya. Topik yang dibahas mencakup ekosistem, daur energi, polusi, konservasi, dan peran manusia dalam menjaga keseimbangan lingkungan. Penting untuk mengembangkan kesadaran lingkungan.'
+            },
+            {
+                id: 'B008',
+                title: 'Kumpulan Sajak Sunda',
+                author: 'R.A. Sukma',
+                category: 'Puisi',
+                stock: 6,
+                available: 6,
+                borrowedBy: [],
+                imageUrl: 'https://placehold.co/200x300/e0f2fe/0369a1?text=Sajak+Sunda',
+                description: 'Kumpulan sajak-sajak yang penuh makna dan keindahan bahasa Sunda. Menggambarkan berbagai tema seperti alam, cinta, kehidupan sosial, dan spiritualitas. Cocok untuk para pencinta sastra Sunda.'
+            }
+        ];
+
+        // Get DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const bookListContainer = document.getElementById('bookList');
+        const messageModal = document.getElementById('messageModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalLoader = document.getElementById('modalLoader');
+        const closeModalButton = document.getElementById('closeModalButton');
+        const themeToggle = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        const body = document.body;
+
+        // Admin related elements
+        const userViewButton = document.getElementById('userViewButton');
+        const adminViewButton = document.getElementById('adminViewButton');
+        const userView = document.getElementById('userView');
+        const adminView = document.getElementById('adminView');
+        const addBookForm = document.getElementById('addBookForm');
+        const bookTitleInput = document.getElementById('bookTitle');
+        const bookAuthorInput = document.getElementById('bookAuthor');
+        const bookCategoryInput = document.getElementById('bookCategory');
+        const bookStockInput = document.getElementById('bookStock');
+        const bookImageUrlInput = document.getElementById('bookImageUrl');
+        const bookDescriptionInput = document.getElementById('bookDescription');
+        const activeBorrowingsList = document.getElementById('activeBorrowingsList');
+        const noActiveBorrowingsMessage = document.getElementById('noActiveBorrowingsMessage');
+        const logoutButton = document.getElementById('logoutButton');
+        const adminBookTableBody = document.getElementById('adminBookTableBody');
+        const noBooksInAdminListMessage = document.getElementById('noBooksInAdminListMessage');
+
+
+        // Borrower details modal elements
+        const borrowerDetailsModal = document.getElementById('borrowerDetailsModal');
+        const borrowerModalBookTitle = document.getElementById('borrowerModalBookTitle');
+        const borrowerTypeSiswa = document.getElementById('borrowerTypeSiswa');
+        const borrowerTypeGuru = document.getElementById('borrowerTypeGuru');
+        const studentFields = document.getElementById('studentFields');
+        const teacherFields = document.getElementById('teacherFields');
+        const borrowerNameSiswaInput = document.getElementById('borrowerNameSiswa');
+        const borrowerClassInput = document.getElementById('borrowerClass');
+        const borrowerNameGuruInput = document.getElementById('borrowerNameGuru');
+        const borrowerPositionInput = document.getElementById('borrowerPosition');
+        const borrowQuantityInput = document.getElementById('borrowQuantityInput');
+        const availableStockInfo = document.getElementById('availableStockInfo');
+        const confirmBorrowDetailsButton = document.getElementById('confirmBorrowDetailsButton');
+        const cancelBorrowDetailsButton = document.getElementById('cancelBorrowDetailsButton');
+
+
+        // Admin login modal elements
+        const adminLoginModal = document.getElementById('adminLoginModal');
+        const loginForm = document.getElementById('loginForm');
+        const adminUsernameInput = document.getElementById('adminUsernameInput');
+        const adminPasswordInput = document.getElementById('adminPasswordInput');
+        const cancelLoginButton = document.getElementById('cancelLoginButton');
+
+        // Admin credentials
+        const ADMIN_USERNAME = 'administrator';
+        const ADMIN_PASSWORD = 'administrator';
+
+        let currentBookToBorrow = null; // To hold the book object when borrowing
+
+        const apiKey = ""; // Canvas will provide this at runtime. DO NOT change.
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+        /**
+         * Saves the current books array to localStorage.
+         */
+        function saveBooksToLocalStorage() {
+            localStorage.setItem('libraryBooks', JSON.stringify(books));
+        }
+
+        /**
+         * Renders the list of books into the UI for the user view.
+         * @param {Array} booksToRender - The array of book objects to display.
+         */
+        function renderBooks(booksToRender) {
+            bookListContainer.innerHTML = ''; // Clear previous books
+            if (booksToRender.length === 0) {
+                bookListContainer.innerHTML = `
+                    <p class="text-center text-gray-500 col-span-full">Maaf, tidak ada buku yang ditemukan.</p>
+                `;
+                return;
+            }
+
+            booksToRender.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'bg-white rounded-xl shadow-md overflow-hidden transform hover:scale-105 transition-all duration-300 ease-in-out';
+                
+                // Determine borrow button state and style
+                const isAvailable = book.available > 0;
+                const borrowButtonClass = isAvailable
+                    ? 'bg-emerald-500 hover:bg-emerald-600 focus:ring-emerald-500'
+                    : 'bg-gray-400 cursor-not-allowed';
+                const borrowButtonText = isAvailable ? 'Pinjam' : 'Dipinjam';
+
+                // Default image if imageUrl is empty
+                const displayImageUrl = book.imageUrl || `https://placehold.co/200x300/e0f2fe/0369a1?text=${encodeURIComponent(book.title || 'No Title')}`;
+
+                bookCard.innerHTML = `
+                    <div class="relative h-48 sm:h-56 overflow-hidden flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                        <img src="${displayImageUrl}" alt="Gambar ${book.title}" class="object-cover w-full h-full" onerror="this.onerror=null;this.src='https://placehold.co/200x300/e0f2fe/0369a1?text=Gambar+Rusak';">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">${book.title}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Penulis: ${book.author}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Kategori: ${book.category}</p>
+                        <p class="text-sm ${isAvailable ? 'text-green-600' : 'text-red-600'} font-medium mb-4">
+                            Jumlah: ${book.available} / ${book.stock} - Status: ${isAvailable ? 'Tersedia' : 'Dipinjam'}
+                        </p>
+                        <button data-book-id="${book.id}" ${isAvailable ? '' : 'disabled'}
+                                class="borrow-button w-full px-4 py-2 text-white font-medium rounded-lg shadow ${borrowButtonClass} focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200 ease-in-out">
+                            ${borrowButtonText}
+                        </button>
+                        <button data-book-id="${book.id}"
+                                class="summarize-button w-full px-4 py-2 mt-2 bg-purple-600 text-white font-medium rounded-lg shadow hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                            ✨ Ringkasan Buku
+                        </button>
+                        <button data-book-id="${book.id}"
+                                class="recommend-button w-full px-4 py-2 mt-2 bg-orange-600 text-white font-medium rounded-lg shadow hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                            ✨ Rekomendasi Buku
+                        </button>
+                    </div>
+                `;
+                bookListContainer.appendChild(bookCard);
+            });
+
+            // Add event listeners to the new borrow buttons
+            document.querySelectorAll('.borrow-button').forEach(button => {
+                button.addEventListener('click', handleBorrowInit); // Initial click to open borrower input
+            });
+            document.querySelectorAll('.summarize-button').forEach(button => {
+                button.addEventListener('click', handleSummarize);
+            });
+            document.querySelectorAll('.recommend-button').forEach(button => {
+                button.addEventListener('click', handleRecommend);
+            });
+        }
+
+        /**
+         * Renders the list of all books in a grid for the admin view.
+         */
+        function renderAdminBookList() {
+            adminBookTableBody.innerHTML = ''; // Clear previous books
+            if (books.length === 0) {
+                noBooksInAdminListMessage.style.display = 'block';
+                return;
+            } else {
+                noBooksInAdminListMessage.style.display = 'none';
+            }
+
+            books.forEach(book => {
+                const row = document.createElement('tr');
+                row.className = 'bg-white dark:bg-gray-900 even:bg-gray-50 dark:even:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">${book.title}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">${book.author}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">${book.category}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">${book.stock}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm ${book.available > 0 ? 'text-green-600' : 'text-red-600'} font-semibold">${book.available}</td>
+                `;
+                adminBookTableBody.appendChild(row);
+            });
+        }
+
+        /**
+         * Renders the list of active borrowings for the admin view.
+         */
+        function renderActiveBorrowings() {
+            activeBorrowingsList.innerHTML = '';
+            let hasActiveBorrowings = false;
+
+            books.forEach(book => {
+                if (book.borrowedBy && book.borrowedBy.length > 0) {
+                    hasActiveBorrowings = true;
+                    book.borrowedBy.forEach((borrower, index) => { // Use index for unique key if needed
+                        const borrowingItem = document.createElement('div');
+                        borrowingItem.className = 'bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm flex justify-between items-center';
+                        
+                        let borrowerDetailsText = '';
+                        if (borrower.type === 'Siswa' && borrower.details.class) {
+                            borrowerDetailsText = `Siswa Kelas: ${borrower.details.class}`;
+                        } else if (borrower.type === 'Guru' && borrower.details.position) {
+                            borrowerDetailsText = `Guru - Jabatan: ${borrower.details.position}`;
+                        } else {
+                            borrowerDetailsText = `(Tidak Diketahui)`;
+                        }
+
+                        borrowingItem.innerHTML = `
+                            <div>
+                                <p class="text-gray-900 dark:text-gray-100 font-semibold">${book.title}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Dipinjam oleh: ${borrower.name} (${borrower.type}) ${borrowerDetailsText}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Jumlah: ${borrower.quantity || 1} | Tanggal Pinjam: ${new Date(borrower.date).toLocaleDateString('id-ID')}</p>
+                            </div>
+                            <button data-book-id="${book.id}" data-borrower-index="${index}"
+                                    class="return-button px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                                Kembalikan
+                            </button>
+                        `;
+                        activeBorrowingsList.appendChild(borrowingItem);
+                    });
+                }
+            });
+
+            if (hasActiveBorrowings) {
+                noActiveBorrowingsMessage.classList.add('hidden');
+            } else {
+                noActiveBorrowingsMessage.classList.remove('hidden');
+            }
+
+            // Add event listeners for return buttons
+            document.querySelectorAll('.return-button').forEach(button => {
+                button.addEventListener('click', handleReturnBook);
+            });
+        }
+
+        /**
+         * Handles the search functionality.
+         */
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredBooks = books.filter(book =>
+                book.title.toLowerCase().includes(searchTerm) ||
+                book.author.toLowerCase().includes(searchTerm) ||
+                book.category.toLowerCase().includes(searchTerm) ||
+                book.description.toLowerCase().includes(searchTerm)
+            );
+            renderBooks(filteredBooks);
+        }
+
+        /**
+         * Initializes the borrowing process by opening the borrower details modal.
+         * @param {Event} event - The click event.
+         */
+        function handleBorrowInit(event) {
+            const bookId = event.target.dataset.bookId;
+            const book = books.find(b => b.id === bookId);
+
+            if (book && book.available > 0) {
+                currentBookToBorrow = book; // Store the book globally for modal confirmation
+                borrowerModalBookTitle.textContent = `Buku: "${book.title}"`;
+                
+                // Reset radio buttons and hide fields
+                borrowerTypeSiswa.checked = false;
+                borrowerTypeGuru.checked = false;
+                studentFields.classList.add('hidden');
+                teacherFields.classList.add('hidden');
+                borrowerNameSiswaInput.value = '';
+                borrowerClassInput.value = '';
+                borrowerNameGuruInput.value = '';
+                borrowerPositionInput.value = '';
+
+                // Set quantity to 1 and update info
+                borrowQuantityInput.value = 1;
+                borrowQuantityInput.max = book.available; // Set max to available stock
+                availableStockInfo.textContent = `Stok Tersedia: ${book.available} buku`;
+                
+                borrowerDetailsModal.classList.remove('hidden');
+            } else if (book && book.available === 0) {
+                showMessageModal(
+                    'Pemberitahuan',
+                    `Maaf, buku "${book.title}" sedang tidak tersedia (habis stok).`
+                );
+            }
+        }
+
+        /**
+         * Confirms the borrowing after borrower details are entered.
+         */
+        function confirmBorrowDetails() {
+            let borrowerName = '';
+            let borrowerType = '';
+            let details = {};
+
+            if (borrowerTypeSiswa.checked) {
+                borrowerType = 'Siswa';
+                borrowerName = borrowerNameSiswaInput.value.trim();
+                details.class = borrowerClassInput.value.trim();
+                if (!borrowerName || !details.class) {
+                    showMessageModal('Error', 'Nama dan Kelas siswa tidak boleh kosong.');
+                    return;
+                }
+            } else if (borrowerTypeGuru.checked) {
+                borrowerType = 'Guru';
+                borrowerName = borrowerNameGuruInput.value.trim();
+                details.position = borrowerPositionInput.value.trim();
+                if (!borrowerName || !details.position) {
+                    showMessageModal('Error', 'Nama dan Jabatan guru tidak boleh kosong.');
+                    return;
+                }
+            } else {
+                showMessageModal('Error', 'Silakan pilih jenis peminjam (Siswa/Guru).');
+                return;
+            }
+
+            const quantityToBorrow = parseInt(borrowQuantityInput.value);
+
+            // Quantity validation
+            if (isNaN(quantityToBorrow) || quantityToBorrow <= 0) {
+                showMessageModal('Error', 'Jumlah buku yang dipinjam harus angka positif.');
+                return;
+            }
+            if (quantityToBorrow > currentBookToBorrow.available) {
+                showMessageModal('Error', `Jumlah buku yang diminta (${quantityToBorrow}) melebihi stok tersedia (${currentBookToBorrow.available}).`);
+                return;
+            }
+
+            if (currentBookToBorrow) {
+                currentBookToBorrow.available -= quantityToBorrow; // Decrement stock by quantity
+                if (!currentBookToBorrow.borrowedBy) {
+                    currentBookToBorrow.borrowedBy = [];
+                }
+                
+                // Add one entry for the borrowing with the specified quantity
+                currentBookToBorrow.borrowedBy.push({
+                    name: borrowerName,
+                    type: borrowerType,
+                    details: details,
+                    quantity: quantityToBorrow, // Store quantity per borrowing instance
+                    date: new Date().toISOString()
+                });
+
+                saveBooksToLocalStorage();
+                renderBooks(books); // Re-render the user book list
+                renderAdminBookList(); // Re-render admin book list
+                renderActiveBorrowings(); // Re-render admin active borrowings
+
+                showMessageModal(
+                    'Pemberitahuan',
+                    `Buku "${currentBookToBorrow.title}" sebanyak ${quantityToBorrow} buah berhasil dipinjam oleh ${borrowerName} (${borrowerType})! Silakan kembalikan tepat waktu.`
+                );
+                borrowerDetailsModal.classList.add('hidden'); // Hide borrower modal
+                currentBookToBorrow = null; // Clear global reference
+            }
+        }
+
+        /**
+         * Cancels the borrowing process and closes the borrower details modal.
+         */
+        function cancelBorrowDetails() {
+            borrowerDetailsModal.classList.add('hidden');
+            currentBookToBorrow = null;
+        }
+
+        /**
+         * Handles returning a book from the admin panel.
+         * @param {Event} event - The click event.
+         */
+        function handleReturnBook(event) {
+            const bookId = event.target.dataset.bookId;
+            const borrowerIndex = parseInt(event.target.dataset.borrowerIndex); // Get index of borrowing record
+            const book = books.find(b => b.id === bookId);
+
+            if (book && book.borrowedBy && book.borrowedBy[borrowerIndex]) {
+                const returnedQuantity = book.borrowedBy[borrowerIndex].quantity || 1; // Default to 1 if not specified
+                const borrowerName = book.borrowedBy[borrowerIndex].name; // Get name for message
+
+                book.available += returnedQuantity; // Increment stock by returned quantity
+
+                // Remove the specific borrowing record using its index
+                book.borrowedBy.splice(borrowerIndex, 1);
+                
+                saveBooksToLocalStorage();
+                renderBooks(books); // Update user view
+                renderAdminBookList(); // Update admin book list
+                renderActiveBorrowings(); // Update admin active borrowings
+                showMessageModal('Pemberitahuan', `Buku "${book.title}" sebanyak ${returnedQuantity} buah dari ${borrowerName} berhasil dikembalikan.`);
+            } else {
+                showMessageModal('Error', `Peminjaman tidak ditemukan atau sudah dikembalikan.`);
+            }
+        }
+
+
+        /**
+         * Handles adding a new book from the admin form.
+         * @param {Event} event - The form submit event.
+         */
+        function handleAddBook(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const newBook = {
+                id: 'B' + (books.length + 1).toString().padStart(3, '0'), // Simple ID generation
+                title: bookTitleInput.value,
+                author: bookAuthorInput.value,
+                category: bookCategoryInput.value,
+                stock: parseInt(bookStockInput.value),
+                available: parseInt(bookStockInput.value),
+                borrowedBy: [],
+                imageUrl: bookImageUrlInput.value || `https://placehold.co/200x300/e0f2fe/0369a1?text=${encodeURIComponent(bookTitleInput.value || 'Gambar Buku')}`,
+                description: bookDescriptionInput.value
+            };
+
+            books.push(newBook);
+            saveBooksToLocalStorage();
+            renderBooks(books); // Update user view
+            renderAdminBookList(); // Update admin book list
+            renderActiveBorrowings(); // Update admin active borrowings if admin panel is open
+
+            showMessageModal('Pemberitahuan', `Buku "${newBook.title}" berhasil ditambahkan!`);
+            addBookForm.reset(); // Clear form fields
+        }
+
+        /**
+         * Handles the "Summarize Book" action using Gemini API.
+         * @param {Event} event - The click event.
+         */
+        async function handleSummarize(event) {
+            const bookId = event.target.dataset.bookId;
+            const book = books.find(b => b.id === bookId);
+
+            if (!book || !book.description) {
+                showMessageModal('Error', 'Deskripsi buku tidak ditemukan.');
+                return;
+            }
+
+            modalTitle.textContent = `Ringkasan Buku: "${book.title}"`;
+            modalMessage.textContent = '';
+            modalLoader.style.display = 'block'; // Show loader
+            showMessageModal(modalTitle.textContent, ''); // Show modal with title, but empty message
+
+            try {
+                const prompt = `Ringkaslah buku ini dalam satu paragraf pendek dalam Bahasa Indonesia: "${book.description}"`;
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    modalMessage.textContent = text;
+                } else {
+                    modalMessage.textContent = 'Maaf, tidak dapat menghasilkan ringkasan saat ini.';
+                    console.error('Unexpected API response structure:', result);
+                }
+            } catch (error) {
+                modalMessage.textContent = 'Error saat menghubungi Gemini API. Silakan coba lagi.';
+                console.error('Error generating summary:', error);
+            } finally {
+                modalLoader.style.display = 'none'; // Hide loader
+            }
+        }
+
+        /**
+         * Handles the "Recommend Book" action using Gemini API.
+         * @param {Event} event - The click event.
+         */
+        async function handleRecommend(event) {
+            const bookId = event.target.dataset.bookId;
+            const book = books.find(b => b.id === bookId);
+
+            if (!book) {
+                showMessageModal('Error', 'Buku tidak ditemukan.');
+                return;
+            }
+
+            modalTitle.textContent = `Rekomendasi Buku Serupa: "${book.title}"`;
+            modalMessage.textContent = '';
+            modalLoader.style.display = 'block'; // Show loader
+            showMessageModal(modalTitle.textContent, ''); // Show modal with title, but empty message
+
+            try {
+                // Crafting a detailed prompt for recommendations in Indonesian
+                const prompt = `Tolong rekomendasikan 3 judul buku yang serupa dengan buku ini: '${book.title}' (Penulis: ${book.author}, Kategori: ${book.category}). Pertimbangkan gaya, topik, dan tingkat pembaca untuk siswa SMP. Tuliskan daftar judul yang ringkas, dipisahkan dengan koma atau dalam daftar poin, dalam Bahasa Indonesia.`;
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    modalMessage.textContent = text;
+                } else {
+                    modalMessage.textContent = 'Maaf, tidak dapat menghasilkan rekomendasi saat ini.';
+                    console.error('Unexpected API response structure:', result);
+                }
+            } catch (error) {
+                modalMessage.textContent = 'Error saat menghubungi Gemini API. Silakan coba lagi.';
+                console.error('Error generating recommendations:', error);
+            } finally {
+                modalLoader.style.display = 'none'; // Hide loader
+            }
+        }
+
+        /**
+         * Displays a custom modal message.
+         * @param {string} title - The title of the modal.
+         * @param {string} message - The message content.
+         */
+        function showMessageModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            messageModal.classList.remove('hidden');
+        }
+
+        /**
+         * Hides the custom modal message.
+         */
+        function hideMessageModal() {
+            modalMessage.textContent = ''; // Clear message when closing
+            modalLoader.style.display = 'none'; // Ensure loader is hidden
+            messageModal.classList.add('hidden');
+        }
+
+        /**
+         * Toggles the theme between light and dark mode.
+         */
+        function toggleTheme() {
+            if (body.classList.contains('dark')) {
+                body.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            } else {
+                body.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        }
+
+        // --- View Switching Logic ---
+        function showUserView() {
+            userView.classList.remove('hidden');
+            adminView.classList.add('hidden');
+            renderBooks(books); // Ensure user view is re-rendered with current book data
+        }
+
+        function showAdminView() {
+            userView.classList.add('hidden');
+            adminView.classList.remove('hidden');
+            renderAdminBookList(); // Render all books for admin
+            renderActiveBorrowings(); // Render active borrowings when admin view is shown
+        }
+
+        /**
+         * Handles admin login attempt.
+         * @param {Event} event - The form submit event.
+         */
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = adminUsernameInput.value;
+            const password = adminPasswordInput.value;
+
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                localStorage.setItem('isLoggedInAdmin', 'true');
+                adminLoginModal.classList.add('hidden');
+                adminUsernameInput.value = ''; // Clear input fields
+                adminPasswordInput.value = ''; // Clear input fields
+                showAdminView();
+            } else {
+                showMessageModal('Login Gagal', 'Username atau password salah. Silakan coba lagi.');
+                adminUsernameInput.value = ''; // Clear input fields
+                adminPasswordInput.value = ''; // Clear input fields
+            }
+        }
+
+        /**
+         * Handles admin logout.
+         */
+        function handleLogout() {
+            localStorage.removeItem('isLoggedInAdmin');
+            showUserView();
+            showMessageModal('Logout Berhasil', 'Anda telah berhasil logout sebagai admin.');
+        }
+
+        // --- Event Listeners ---
+        searchButton.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                handleSearch();
+            }
+        });
+        closeModalButton.addEventListener('click', hideMessageModal);
+        themeToggle.addEventListener('click', toggleTheme);
+
+        // Admin/User View Buttons
+        userViewButton.addEventListener('click', showUserView);
+        adminViewButton.addEventListener('click', () => {
+            if (localStorage.getItem('isLoggedInAdmin') === 'true') {
+                showAdminView();
+            } else {
+                adminLoginModal.classList.remove('hidden');
+            }
+        });
+
+        // Add Book Form Submission
+        addBookForm.addEventListener('submit', handleAddBook);
+
+        // Borrower Details Modal Buttons
+        confirmBorrowDetailsButton.addEventListener('click', confirmBorrowDetails);
+        cancelBorrowDetailsButton.addEventListener('click', cancelBorrowDetails);
+
+        // Borrower Type Radio Buttons
+        borrowerTypeSiswa.addEventListener('change', () => {
+            studentFields.classList.remove('hidden');
+            teacherFields.classList.add('hidden');
+            borrowerNameSiswaInput.focus();
+        });
+        borrowerTypeGuru.addEventListener('change', () => {
+            teacherFields.classList.remove('hidden');
+            studentFields.classList.add('hidden');
+            borrowerNameGuruInput.focus();
+        });
+
+        // Admin Login Modal Buttons
+        loginForm.addEventListener('submit', handleLogin);
+        cancelLoginButton.addEventListener('click', () => {
+            adminLoginModal.classList.add('hidden');
+            adminUsernameInput.value = ''; // Clear input fields
+            adminPasswordInput.value = ''; // Clear input fields
+        });
+
+        // Logout Button
+        logoutButton.addEventListener('click', handleLogout);
+
+
+        // Initial render and theme load when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load theme preference from localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                // Default to light mode or if preference is 'light'
+                body.classList.remove('dark');
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+
+            // Check if admin was previously logged in
+            if (localStorage.getItem('isLoggedInAdmin') === 'true') {
+                showAdminView(); // Directly show admin view if already logged in
+            } else {
+                showUserView(); // Start with user view otherwise
+            }
+        });
+    </script>
+</body>
+</html>
